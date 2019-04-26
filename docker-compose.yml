@@ -28,4 +28,4 @@ services:
             - hashbrown-cms--network
         restart: unless-stopped
         volumes:
-            - "./db:/data/db"
+            - mongodata

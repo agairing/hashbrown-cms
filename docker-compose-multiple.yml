@@ -1,0 +1,69 @@
+version: "3.4"
+
+networks:
+    hashbrown-cms--network: ~
+    
+services:
+    node2:
+        image: node
+        container_name: "hashbrown-cms--node2"
+        ports:
+            - "8081:8080"
+        depends_on:
+            - mongodb2
+        networks:
+            - hashbrown-cms--network
+        restart: unless-stopped
+        command: "node /opt/hashbrown-cms"
+        environment:
+            - MONGODB_HOST=mongodb2
+            - MONGODB_USERNAME=admin
+            - MONGODB_PASSWORD=qwertz
+            - 'MONGODB_OPTIONS={"authSource": "admin"}'       
+        volumes:
+            - "./:/opt/hashbrown-cms"
+            - "./remote2:/remote"
+            
+    node:
+        image: node
+        container_name: "hashbrown-cms--node"
+        ports:
+            - "8080:8080"
+        depends_on:
+            - mongodb
+        networks:
+            - hashbrown-cms--network
+        restart: unless-stopped
+        command: "node /opt/hashbrown-cms"
+        environment:
+            - MONGODB_HOST=mongodb
+            - MONGODB_USERNAME=admin
+            - MONGODB_PASSWORD=qwertz
+            - 'MONGODB_OPTIONS={"authSource": "admin"}'
+        volumes:
+            - "./:/opt/hashbrown-cms"
+            - "./remote:/remote"
+
+    mongodb:
+        image: mongo
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=qwertz           
+        container_name: "hashbrown-cms--mongodb"
+        networks:
+            - hashbrown-cms--network
+        restart: unless-stopped
+        volumes:
+            - mongodata
+    
+    mongodb2:
+        image: mongo      
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=admin
+            - MONGO_INITDB_ROOT_PASSWORD=qwertz  
+        container_name: "hashbrown-cms--mongodb2"
+        networks:
+            - hashbrown-cms--network
+        restart: unless-stopped
+        volumes:
+            - mongodata2
